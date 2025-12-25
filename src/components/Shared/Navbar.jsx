@@ -42,8 +42,9 @@ const Navbar = () => {
          {navlinks}
         </ul>
       </div>
-      <div className="navbar-end">
+      <div className="navbar-end flex gap-3">
         <button className="btn btn-primary"><NavLink to={'/login'}>Login</NavLink></button>
+        <button className="btn btn-primary"><NavLink to={'/register'}>Register</NavLink></button>
       </div>
     </div>
   );
