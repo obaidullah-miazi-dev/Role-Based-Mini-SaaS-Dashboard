@@ -1,12 +1,16 @@
 import React from "react";
 import { NavLink } from "react-router";
 
+
 const Navbar = () => {
-    const navlinks = <>
-    <NavLink to={'/'}>Home</NavLink>
-    <NavLink to={'/tasks'}>Tasks</NavLink>
-    <NavLink to={'/dashboard'}>Dashboard</NavLink>
+  const navlinks = (
+    <>
+      <NavLink to={"/"}>Home</NavLink>
+      <NavLink to={"/tasks"}>Tasks</NavLink>
+      <NavLink to={"/dashboard"}>Dashboard</NavLink>
     </>
+  );
+
   return (
     <div className="navbar bg-base-100 shadow-sm">
       <div className="navbar-start">
@@ -39,12 +43,16 @@ const Navbar = () => {
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1 flex  justify-center gap-16 font-semibold">
-         {navlinks}
+          {navlinks}
         </ul>
       </div>
       <div className="navbar-end flex gap-3">
-        <button className="btn btn-primary"><NavLink to={'/login'}>Login</NavLink></button>
-        <button className="btn btn-primary"><NavLink to={'/register'}>Register</NavLink></button>
+        <button className="btn btn-primary">
+          <NavLink to={"/login"}>Login</NavLink>
+        </button>
+        <button className="btn btn-primary">
+          <NavLink to={"/register"}>Register</NavLink>
+        </button>
       </div>
     </div>
   );
