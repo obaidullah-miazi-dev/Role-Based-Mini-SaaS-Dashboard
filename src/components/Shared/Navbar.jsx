@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useContext } from "react";
 import { NavLink } from "react-router";
-
+import { AuthContext } from "../../provider/AuthProvider";
 
 const Navbar = () => {
   const navlinks = (
@@ -11,6 +11,13 @@ const Navbar = () => {
     </>
   );
 
+  const handleLogOut = () => {
+    localStorage.removeItem("token");
+    setUser(null)
+  };
+
+  const { user,setUser } = useContext(AuthContext);
+  console.log(user);
   return (
     <div className="navbar bg-base-100 shadow-sm">
       <div className="navbar-start">
@@ -47,12 +54,18 @@ const Navbar = () => {
         </ul>
       </div>
       <div className="navbar-end flex gap-3">
-        <button className="btn btn-primary">
-          <NavLink to={"/login"}>Login</NavLink>
-        </button>
-        <button className="btn btn-primary">
-          <NavLink to={"/register"}>Register</NavLink>
-        </button>
+        {user ? (
+          <button onClick={handleLogOut}>Log Out </button>
+        ) : (
+          <>
+            <button className="btn btn-primary">
+              <NavLink to={"/login"}>Login</NavLink>
+            </button>
+            <button className="btn btn-primary">
+              <NavLink to={"/register"}>Register</NavLink>
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

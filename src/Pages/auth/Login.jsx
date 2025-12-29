@@ -2,8 +2,10 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
 
 const Login = () => {
+  const Navigate = useNavigate()
   const {
     register,
     handleSubmit,
@@ -13,15 +15,19 @@ const Login = () => {
 
   const { mutate: Login } = useMutation({
     mutationFn: async (userData) => {
-      const res = await axios.post("http://localhost:3000/loginUser", userData);
-      const token = res.data.token;
-      localStorage.setItem("access-token", token);
+      const res = await axios.post("http://localhost:3000/login", userData);
+      const token = `Bearer ${res.data.token}`;
+      localStorage.setItem("token", token);
       return res.data;
     },
     onSuccess: (data) => {
       alert(data.message);
+      Navigate('/')
       reset();
     },
+    onError:(error)=>{
+      alert(error.message)
+    }
   });
 
   const handleLogin = (data) => {

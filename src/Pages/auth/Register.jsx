@@ -1,4 +1,4 @@
-import { useMutation} from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -14,11 +14,16 @@ const Register = () => {
   const { mutate: Register } = useMutation({
     mutationFn: async (userData) => {
       const res = await axios.post("http://localhost:3000/register", userData);
-      return res.data
+      return res.data;
     },
+
     onSuccess: (data) => {
       alert(data.message);
       reset();
+    },
+
+    onError: (error) => {
+      alert(error.response?.data?.message || "Something went wrong");
     },
   });
 
