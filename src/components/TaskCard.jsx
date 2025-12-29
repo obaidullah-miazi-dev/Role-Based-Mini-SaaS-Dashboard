@@ -1,22 +1,27 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { AuthContext } from "../provider/AuthProvider";
+import { Pencil } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import TaskCard from "../../components/TaskCard";
+import axios from "axios";
 
-const DashboardHome = () => {
+const TaskCard = (taskInfo) => {
+  const { task } = taskInfo;
+  const { user } = useContext(AuthContext);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { register, handleSubmit, reset } = useForm();
 
   const queryClient = useQueryClient()
-  const { mutate: addTask } = useMutation({
+  const { mutate: editTask } = useMutation({
     mutationFn: async (taskInfo) => {
-      const res = await axios.post("http://localhost:3000/taskAdd", taskInfo);
+      const res = await axios.patch(`http://localhost:3000/editTask/${task?._id}`, taskInfo);
       return res.data;
     },
     onSuccess: (data) => {
-      if (data.insertedId) {
-        alert("task added successfully");
+        // console.log(data)
+      if (data.modifiedCount) {
+        alert("task edited successfully");
         queryClient.invalidateQueries(['allTask'])
       }
     },
@@ -26,38 +31,39 @@ const DashboardHome = () => {
   });
 
   const onSubmit = (data) => {
-    addTask(data);
+    editTask(data);
+    console.log(data)
     reset();
     setIsModalOpen(false);
   };
 
-  const { data: allTask } = useQuery({
-    queryKey: ["allTask"],
-    queryFn: async () => {
-      const res = await axios.get("http://localhost:3000/taskGet");
-      return res.data;
-    },
-  });
-
-  console.log(allTask);
-
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <div className="flex justify-between items-center px-5">
-        <h3 className="text-3xl font-bold">All Task</h3>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="bg-indigo-600 text-white py-3 px-6 rounded-lg hover:bg-indigo-700 transition duration-300 font-semibold shadow-md"
+    <div className="bg-white shadow-lg rounded-xl p-6 w-full mx-auto border border-gray-200 hover:shadow-xl transition-shadow duration-300">
+      <h3 className="text-xl font-bold text-gray-900 mb-2">{task?.name}</h3>
+      <p className="text-gray-700 mb-4">{task?.description}</p>
+      <div className="flex justify-between items-center">
+        <span
+          className={`inline-block px-4 py-1 rounded-full text-sm font-semibold ${
+            task?.active
+              ? "bg-green-100 text-green-700"
+              : "bg-red-100 text-red-700"
+          }`}
         >
-          Add Task Challenge
-        </button>
+          {task?.active ? "Active" : "Inactive"}
+        </span>
+        {user?.role === "admin" && (
+          <button onClick={()=>setIsModalOpen(true)} className="flex justify-center items-center gap-2 bg-green-100 px-3 py-1 rounded-full text-green-700 font-semibold">
+            {" "}
+            <Pencil size={16} /> Edit
+          </button>
+        )}
       </div>
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
           <div className="bg-white p-8 rounded-xl shadow-2xl max-w-lg w-full mx-4">
             <h2 className="text-3xl font-bold mb-6 text-gray-900">
-              Create Task Challenge
+              Edit Task Challenge
             </h2>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div>
@@ -69,6 +75,7 @@ const DashboardHome = () => {
                 </label>
                 <input
                   id="name"
+                  defaultValue={task?.name}
                   {...register("name", { required: true })}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
                   placeholder="Enter challenge name"
@@ -83,6 +90,7 @@ const DashboardHome = () => {
                 </label>
                 <textarea
                   id="description"
+                  defaultValue={task?.description}
                   {...register("description")}
                   rows="4"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
@@ -122,14 +130,8 @@ const DashboardHome = () => {
           </div>
         </div>
       )}
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mt-8">
-        {allTask?.map((task) => (
-          <TaskCard key={task._id} task={task} />
-        ))}
-      </div>
     </div>
   );
 };
 
-export default DashboardHome;
+export default TaskCard;
