@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 
 const Login = () => {
-  const Navigate = useNavigate()
+  const Navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -22,12 +22,13 @@ const Login = () => {
     },
     onSuccess: (data) => {
       alert(data.message);
-      Navigate('/')
+      Navigate("/");
+      window.location.reload();
       reset();
     },
-    onError:(error)=>{
-      alert(error.message)
-    }
+    onError: (error) => {
+      alert(error.message);
+    },
   });
 
   const handleLogin = (data) => {

@@ -71,19 +71,6 @@ const DashboardLayout = () => {
               </NavLink>
             </li>
 
-            {/* all task challange list  */}
-            <li>
-              <NavLink to={'/'}>
-                <p
-                className="is-drawer-close:tooltip is-drawer-close:tooltip-right flex items-center gap-2"
-                data-tip="Homepage"
-              >
-              
-              <List size={18}/>
-                <span className="is-drawer-close:hidden">Homepage</span>
-              </p>
-              </NavLink>
-            </li>
 
             {/* List item */}
             <li>

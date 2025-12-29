@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { AuthContext } from "../provider/AuthProvider";
-import { Pencil } from "lucide-react";
+import { Pencil, Trash } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import axios from "axios";
@@ -12,17 +12,39 @@ const TaskCard = (taskInfo) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { register, handleSubmit, reset } = useForm();
 
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   const { mutate: editTask } = useMutation({
     mutationFn: async (taskInfo) => {
-      const res = await axios.patch(`http://localhost:3000/editTask/${task?._id}`, taskInfo);
+      const res = await axios.patch(
+        `http://localhost:3000/editTask/${task?._id}`,
+        taskInfo
+      );
       return res.data;
     },
     onSuccess: (data) => {
-        // console.log(data)
+      // console.log(data)
       if (data.modifiedCount) {
         alert("task edited successfully");
-        queryClient.invalidateQueries(['allTask'])
+        queryClient.invalidateQueries(["allTask"]);
+      }
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+
+  const { mutate: DeleteTask } = useMutation({
+    mutationFn: async () => {
+      const res = await axios.delete(
+        `http://localhost:3000/deleteTask/${task?._id}`
+      );
+      return res.data;
+    },
+    onSuccess: (data) => {
+      console.log(data);
+      if (data.deletedCount) {
+        alert("task deleted successfully");
+        queryClient.invalidateQueries(["allTask"]);
       }
     },
     onError: (error) => {
@@ -32,9 +54,13 @@ const TaskCard = (taskInfo) => {
 
   const onSubmit = (data) => {
     editTask(data);
-    console.log(data)
+    console.log(data);
     reset();
     setIsModalOpen(false);
+  };
+
+  const deleteTask = () => {
+    DeleteTask();
   };
 
   return (
@@ -52,10 +78,23 @@ const TaskCard = (taskInfo) => {
           {task?.active ? "Active" : "Inactive"}
         </span>
         {user?.role === "admin" && (
-          <button onClick={()=>setIsModalOpen(true)} className="flex justify-center items-center gap-2 bg-green-100 px-3 py-1 rounded-full text-green-700 font-semibold">
-            {" "}
-            <Pencil size={16} /> Edit
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="flex justify-center items-center gap-2 bg-green-100 px-3 py-1 rounded-full text-green-700 font-semibold"
+            >
+              {" "}
+              <Pencil size={16} /> Edit
+            </button>
+
+            <button
+              onClick={() => deleteTask()}
+              className="flex justify-center items-center gap-2 bg-red-50 px-3 py-1 rounded-full text-red-700 font-semibold"
+            >
+              {" "}
+              <Trash size={16} /> Delete
+            </button>
+          </div>
         )}
       </div>
 

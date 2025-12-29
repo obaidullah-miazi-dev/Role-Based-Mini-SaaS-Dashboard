@@ -3,20 +3,21 @@ import { NavLink } from "react-router";
 import { AuthContext } from "../../provider/AuthProvider";
 
 const Navbar = () => {
+  const { user, setUser } = useContext(AuthContext);
   const navlinks = (
     <>
       <NavLink to={"/"}>Home</NavLink>
       <NavLink to={"/tasks"}>Tasks</NavLink>
-      <NavLink to={"/dashboard"}>Dashboard</NavLink>
+      {user?.role === "admin" && <NavLink to={"/dashboard"}>Dashboard</NavLink>}
     </>
   );
 
   const handleLogOut = () => {
     localStorage.removeItem("token");
-    setUser(null)
+    setUser(null);
+    alert("log out successfully");
   };
 
-  const { user,setUser } = useContext(AuthContext);
   console.log(user);
   return (
     <div className="navbar bg-base-100 shadow-sm">
@@ -55,7 +56,9 @@ const Navbar = () => {
       </div>
       <div className="navbar-end flex gap-3">
         {user ? (
-          <button onClick={handleLogOut}>Log Out </button>
+          <button onClick={handleLogOut} className="btn btn-error text-white">
+            Log Out{" "}
+          </button>
         ) : (
           <>
             <button className="btn btn-primary">
